@@ -1,0 +1,53 @@
+#include <SoftwareSerial.h>
+#include <TinyGPS.h>
+
+// Define the serial port
+SoftwareSerial gpsSerial(10, 11); // RX, TX
+
+// Define the GPS object
+TinyGPS gps;
+
+void setup() {
+  // Start the serial ports
+  Serial.begin(9600);
+  gpsSerial.begin(9600);
+}
+
+void loop() {
+  // Read the GPS data
+  while (gpsSerial.available() > 0) {
+    if (gps.encode(gpsSerial.read())) {
+      // Extract the latitude and longitude values
+      float lat, lon;
+      gps.f_get_position(&lat, &lon);
+
+      // Send the GPS data over the serial port
+      Serial.print("$GPGGA,");
+      Serial.print(gps.time.hour());
+      Serial.print(gps.time.minute());
+      Serial.print(gps.time.second());
+      Serial.print(",");
+      Serial.print(lat, 6);
+      Serial.print(",");
+      Serial.print(gps.lat());
+      Serial.print(",");
+      Serial.print(lon, 6);
+      Serial.print(",");
+      Serial.print(gps.lng());
+      Serial.print(",");
+      Serial.print(gps.satellites());
+      Serial.print(",");
+      Serial.print(gps.hdop());
+      Serial.print(",");
+      Serial.print(gps.altitude());
+      Serial.print(",");
+      Serial.print(gps.altitude() == TinyGPS::GPS_INVALID_ALTITUDE ? 0 : 1);
+      Serial.print(",");
+      Serial.print(gps.course());
+      Serial.print(",");
+      Serial.print(gps.speed());
+      Serial.println();
+    }
+  }
+}
+

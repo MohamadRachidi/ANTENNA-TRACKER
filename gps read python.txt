@@ -1,0 +1,15 @@
+import serial
+
+# Configure serial port
+ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+
+# Read GPS coordinates
+while True:
+    data = ser.readline().decode().strip()
+    if data.startswith('$GPGGA'):
+        parts = data.split(',')
+        lat = parts[2]
+        lat_dir = parts[3]
+        lon = parts[4]
+        lon_dir = parts[5]
+        print(f'Latitude: {lat} {lat_dir}, Longitude: {lon} {lon_dir}')
